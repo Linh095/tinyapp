@@ -21,9 +21,8 @@ const urlDatabase = {
 app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set('partial', '/partial/_header');
+
 app.set("view engine", "ejs");
-
-
 
 app.get("/", (req, res) => {
   res.send('Hello!');
@@ -35,9 +34,7 @@ app.get("/urls", (req, res) => {
 });
 
 app.post("/urls", (req, res) => {
-  console.log(req.body);  // Log the POST request body to the console
-
-  //saves this to database object
+  console.log(req.body);
   const _shortURL = generateRandomString(numChar);
   urlDatabase[_shortURL] = req.body.longURL;
 
@@ -68,12 +65,8 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   res.redirect("/urls");
 });
 
-//TO EDIT
-// /urls/<%= shortURL %>/edit
 app.post("/urls/:shortURL/edit", (req, res) => {
-  console.log("I AM IN THIS PART")
   urlDatabase[req.params.shortURL] = req.body.editedURL;
-  console.log(req.body.editedURL);
   res.redirect("/urls/"+req.params.shortURL);
 });
 
