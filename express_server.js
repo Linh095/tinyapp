@@ -1,8 +1,14 @@
 const express = require("express");
 const app = express();
+const cookieParser = require("cookie-parser");
 const PORT = 8080; //default port for vagrant environment
 const bodyParser = require("body-parser");
 const numChar = 6; //number of characters in short url
+
+const urlDatabase = {
+  "b2xVn2": "http://www.lighthouselabs.ca",
+  "9sm5xK": "http://www.google.com"
+};
 
 function generateRandomString(numChar) {
   let string = '';
@@ -13,10 +19,7 @@ function generateRandomString(numChar) {
   return string;
 };
 
-const urlDatabase = {
-  "b2xVn2": "http://www.lighthouselabs.ca",
-  "9sm5xK": "http://www.google.com"
-};
+app.use(cookieParser());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -31,14 +34,6 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   let templateVars = { urls: urlDatabase };
   res.render("urls_index", templateVars);
-});
-
-app.post("/urls", (req, res) => {
-  console.log(req.body);
-  const _shortURL = generateRandomString(numChar);
-  urlDatabase[_shortURL] = req.body.longURL;
-
-  res.redirect("/urls/" + _shortURL);
 });
 
 app.get("/urls.json", (req, res) => {
@@ -60,6 +55,13 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+app.post("/urls", (req, res) => {
+  const _shortURL = generateRandomString(numChar);
+  urlDatabase[_shortURL] = req.body.longURL;
+
+  res.redirect("/urls/" + _shortURL);
+});
+
 app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
@@ -70,6 +72,16 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   res.redirect("/urls/"+req.params.shortURL);
 });
 
+app.post("/login", (req, res) => {
+  const { username } = req.body;
+  res.cookie("username", username);
+  res.redirect("/urls");
+});
+
+let templateVars = {
+  username: req.cookies["username"]
+};
+res.render("urls_index", templateVars);
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
