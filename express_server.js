@@ -1,6 +1,9 @@
 const express = require("express");
 const app = express();
 const PORT = 8080; //default port for vagrant environment
+const bodyParser = require("body-parser");
+
+app.use(bodyParser.urlencoded({extended: true}));
 
 app.set('partial', '/partial/_header');
 app.set("view engine", "ejs");
@@ -21,6 +24,10 @@ app.get("/urls", (req, res) => {
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
+});
+
+app.get("/urls/new", (req, res) => {
+  res.render("urls_new");
 });
 
 //page to display sigle URL and its shorted form
