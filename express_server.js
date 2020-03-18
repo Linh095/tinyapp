@@ -7,10 +7,10 @@ const numChar = 6; //number of characters in short url
 function generateRandomString(numChar) {
   let string = '';
   const chararcters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
-    for (let i = numChar; i > 0; --i) {
-      string += chararcters[Math.floor(Math.random() * chararcters.length)];
-    }
-    return string;
+  for (let i = numChar; i > 0; --i) {
+    string += chararcters[Math.floor(Math.random() * chararcters.length)];
+  }
+  return string;
 };
 
 const urlDatabase = {
@@ -18,7 +18,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 
 app.set('partial', '/partial/_header');
 app.set("view engine", "ejs");
@@ -36,14 +36,12 @@ app.get("/urls", (req, res) => {
 
 app.post("/urls", (req, res) => {
   console.log(req.body);  // Log the POST request body to the console
-  
+
   //saves this to database object
   const _shortURL = generateRandomString(numChar);
-  urlDatabase[_shortURL]= req.body.longURL;
-  console.log(_shortURL);
-  console.log(urlDatabase[_shortURL]);
+  urlDatabase[_shortURL] = req.body.longURL;
 
-  res.redirect("/urls/" + _shortURL);         // Respond with 'Ok' (we will replace this)
+  res.redirect("/urls/" + _shortURL);
 });
 
 app.get("/urls.json", (req, res) => {
@@ -56,7 +54,7 @@ app.get("/urls/new", (req, res) => {
 
 //page to display sigle URL and its shorted form
 app.get("/urls/:shortURL", (req, res) => {
-  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]};
+  let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
 });
 
@@ -69,6 +67,16 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   delete urlDatabase[req.params.shortURL];
   res.redirect("/urls");
 });
+
+//TO EDIT
+// /urls/<%= shortURL %>/edit
+app.post("/urls/:shortURL/edit", (req, res) => {
+  console.log("I AM IN THIS PART")
+  urlDatabase[req.params.shortURL] = req.body.editedURL;
+  console.log(req.body.editedURL);
+  res.redirect("/urls/"+req.params.shortURL);
+});
+
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
