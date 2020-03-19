@@ -2,6 +2,7 @@ const express = require("express");
 const app = express();
 const bcrypt = require("bcrypt");
 const cookieSession = require("cookie-session");
+const Keygrip = require("keygrip");
 const PORT = 8080; //default port for vagrant environment
 const bodyParser = require("body-parser");
 const numChar = 6; //number of characters in short url
@@ -93,8 +94,7 @@ const urlsForUser = (id) => {
 //activate stuff (some preloaded)
 app.use(cookieSession({
   name: 'session',
-  keys: new Keygrip(['key1', 'key2'], 'SHA384', 'base64'),
-  maxAge: 24*60*60*1000
+  keys: ['key1', 'key2'],
 }));
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -190,8 +190,9 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const ID = getID(email);
-  if (ID && loginValidation(ID, password)) {
-    res.session.user_id = ID;
+  console.log("ID IS ",ID);
+  if (ID !== undefined && loginValidation(ID, password)) {
+    req.session.user_id = ID;
     res.redirect("/urls");
   } else {
     res.redirect("403");
@@ -216,7 +217,7 @@ app.post("/register", (req, res) => {
       'password': hashedPassword
     }
     users[ID] = newUser;
-    res.session.user_id = ID;
+    req.session.user_id = ID;
     res.redirect("/urls");
   } else {
     res.redirect("/404")
