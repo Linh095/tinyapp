@@ -1,5 +1,6 @@
 const express = require("express");
 const app = express();
+const bcrypt = require("bcrypt");
 const cookieParser = require("cookie-parser");
 const PORT = 8080; //default port for vagrant environment
 const bodyParser = require("body-parser");
@@ -156,7 +157,7 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  const longURL = urlDatabase[req.params.shortURL];
+  const longURL = urlDatabase[req.params.shortURL].longURL;
   res.redirect(longURL);
 });
 
@@ -180,7 +181,7 @@ app.post("/urls/:shortURL/delete", (req, res) => {
 });
 
 app.post("/urls/:shortURL/edit", (req, res) => {
-  urlDatabase[req.params.shortURL] = req.body.editedURL;
+  urlDatabase[req.params.shortURL].longURL = req.body.editedURL;
   res.redirect("/urls/" + req.params.shortURL);
 });
 
