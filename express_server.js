@@ -33,6 +33,18 @@ const generateRandomString = (numChar) => {
   return string;
 };
 
+const loginValidation = (email, password) => {
+  if (email === "" || password === "") {
+    return false;
+  }
+  for (user in users) {
+    if (users[user].email === email && users[user].password === password) {
+      return true;
+    }
+  }
+  return false;
+};
+
 const registrationValid = (email, password) => {
   if (email === "" || password === "") {
     return false;
@@ -45,7 +57,13 @@ const registrationValid = (email, password) => {
   return true;
 };
 
-
+const getID = (email) => {
+  for (user in users) {
+    if (users[user].email === email) {
+      return user;
+    }
+  }
+}
 
 //activate cookies
 app.use(cookieParser());
@@ -63,11 +81,15 @@ app.get("/", (req, res) => {
 
 
 app.get("/register", (req, res) => {
-  res.render("register")
+  const templateVars = { urls: urlDatabase, user: { id: undefined } };
+  res.render("register", templateVars)
 });
 
+app.get("/login", (req, res) => {
+  const templateVars = { urls: urlDatabase, user: { id: undefined } };
+  res.render("login", templateVars)
+});
 
-//GO BACK TO THIS SPOT
 app.get("/urls", (req, res) => {
   const templateVars = { urls: urlDatabase, user: { id: undefined } };
   res.render("urls_index", templateVars);
@@ -122,19 +144,27 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   res.redirect("/urls/" + req.params.shortURL);
 });
 
+
+//HERE
+
+
+
 app.post("/login", (req, res) => {
-  const { username } = req.body;
-  res.cookie("username", username);
+  const { email, password } = req.body;
+  if (loginValidation(email, password)) {
+    const ID = getID(email);
+    res.cookie("user_id", ID);
+    
+
+  }
   res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("username");
-
+  res.clearCookie("user_id");
   res.redirect("/urls");
 });
 
-//  WORKING ON THIS
 app.post("/register", (req, res) => {
   
   const { email, password } = req.body;
