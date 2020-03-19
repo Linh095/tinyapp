@@ -99,10 +99,13 @@ app.get("/404", (req, res) => {
   res.render("404")
 });
 
+app.get("/403", (req, res) => {
+  res.render("403")
+});
+
 //WHEN USER IS LOGGED IT
 app.get("/urls/id/:userID", (req, res) => {
   const userInfo = users[req.params.userID];
-  console.log(userInfo);
   const templateVars = { urls: urlDatabase, user: userInfo };
   res.render("urls_index", templateVars);
 });
@@ -154,10 +157,10 @@ app.post("/login", (req, res) => {
   if (loginValidation(email, password)) {
     const ID = getID(email);
     res.cookie("user_id", ID);
-    
-
+    res.redirect("/urls/id/" + ID);
+  } else{
+    res.redirect("403");
   }
-  res.redirect("/urls");
 });
 
 app.post("/logout", (req, res) => {
