@@ -190,7 +190,6 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const ID = getID(email);
-  console.log("ID IS ",ID);
   if (ID !== undefined && loginValidation(ID, password)) {
     req.session.user_id = ID;
     res.redirect("/urls");
@@ -200,7 +199,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.session = null;
+  req.session = null;
   res.redirect("/urls");
 });
 
