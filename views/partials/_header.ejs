@@ -12,11 +12,17 @@
       </div>
     </div>
     <% if(user["id"] === undefined){ %>
-    <form class="form-inline" action="/login" method="POST">
+      <form class="form-inline" action="/login" method="GET">
+        <button type="submit" class="btn btn-outline-light" style="margin-right: 1em;">Login</button>       
+      </form>
+      <form class="form-inline" action="/register" method="GET">
+        <button type="submit" class="btn btn-outline-light" style="margin-right: 1em;">Register</button>
+      </form>
+    <!-- <form class="form-inline" action="/login" method="POST">
       <input class="form-control" type="text" name="username" placeholder="Username"
         style="width: 200px; margin-right: 1em; margin-left: 1em">
       <button type="submit" class="btn btn-outline-dark">Login</button>
-    </form>
+    </form> -->
     <% } else{ %>
     <form class="form-inline" action="/logout" method="POST">
       <label for="submit" style="margin-right: 1em;">Logged in as: <%= user["email"] %></label>
