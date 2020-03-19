@@ -7,16 +7,19 @@ const bodyParser = require("body-parser");
 const numChar = 6; //number of characters in short url
 const numUserID = 10; //number of characters for random user id
 
+const hashedPassword = bcrypt.hashSync("purple-monkey-dinosaur", 10);
+const hashedPassword2 = bcrypt.hashSync("dishwasher-funk", 10);
+
 const users = {
   "userRandomID": {
     id: "userRandomID",
     email: "user@example.com",
-    password: "purple-monkey-dinosaur"
+    password: hashedPassword
   },
   "user2RandomID": {
     id: "user2RandomID",
     email: "user2@example.com",
-    password: "dishwasher-funk"
+    password: hashedPassword2
   }
 }
 
