@@ -57,11 +57,15 @@ app.get("/register", (req, res) => {
 
 //GO BACK TO THIS SPOT
 app.get("/urls", (req, res) => {
-  const userID = req.cookies["user_id"];
-  console.log(userID);
-  const userInfo = users[userID];
+  const templateVars = { urls: urlDatabase, user: {id: undefined}};
+  res.render("urls_index", templateVars);
+});
+
+//WHEN USER IS LOGGED IT
+app.get("/urls/id/:userID", (req, res) => {
+  const userInfo = users[req.params.userID];
   console.log(userInfo);
-  let templateVars = { urls: urlDatabase, user: userInfo};
+  const templateVars = { urls: urlDatabase, user: userInfo};
   res.render("urls_index", templateVars);
 });
 
@@ -125,11 +129,11 @@ app.post("/register", (req, res) => {
   }
   users[ID] = newUser;
   res.cookie('user_id', ID);
-  let templateVars = { urls: urlDatabase, user: users[ID]};
+  // let templateVars = { urls: urlDatabase, user: users[ID]};
 
-  res.render("urls_index", templateVars);
+  // // res.render("urls_index", templateVars);
 
-  // res.redirect("/urls/" + ID);
+  res.redirect("/urls/id/" + ID);
 });
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
