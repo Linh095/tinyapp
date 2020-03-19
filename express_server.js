@@ -4,6 +4,20 @@ const cookieParser = require("cookie-parser");
 const PORT = 8080; //default port for vagrant environment
 const bodyParser = require("body-parser");
 const numChar = 6; //number of characters in short url
+const numUserID = 10; //number of characters for random user id
+
+const users = {
+  "userRandomID": {
+    id: "userRandomID",
+    email: "user@example.com",
+    password: "purple-monkey-dinosaur"
+  },
+  "user2RandomID": {
+    id: "user2RandomID",
+    email: "user2@example.com",
+    password: "dishwasher-funk"
+  }
+}
 
 const urlDatabase = {
   "b2xVn2": "http://www.lighthouselabs.ca",
@@ -35,8 +49,19 @@ app.get("/register", (req, res) => {
   res.render("register")
 });
 
+
+
+
+
+
+
+//GO BACK TO THIS SPOT
 app.get("/urls", (req, res) => {
-  let templateVars = { urls: urlDatabase, username: req.cookies["username"] };
+  const userID = req.cookies["user_id"];
+  console.log(userID);
+  const userInfo = users[userID];
+  console.log(userInfo);
+  let templateVars = { urls: urlDatabase, user: userInfo};
   res.render("urls_index", templateVars);
 });
 
@@ -83,9 +108,29 @@ app.post("/login", (req, res) => {
 
 app.post("/logout", (req, res) => {
   res.clearCookie("username");
+
   res.redirect("/urls");
 });
 
+
+
+//  WORKING ON THIS
+app.post("/register", (req, res) => {
+  const ID = generateRandomString(numUserID);
+  const { email, password } = req.body;
+  let newUser = {
+    'id': ID,
+    'email': email,
+    'password': password
+  }
+  users[ID] = newUser;
+  res.cookie('user_id', ID);
+  let templateVars = { urls: urlDatabase, user: users[ID]};
+
+  res.render("urls_index", templateVars);
+
+  // res.redirect("/urls/" + ID);
+});
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
