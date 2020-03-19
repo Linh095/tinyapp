@@ -24,7 +24,7 @@ const urlDatabase = {
   "9sm5xK": "http://www.google.com"
 };
 
-function generateRandomString(numChar) {
+const generateRandomString = (numChar) => {
   let string = '';
   const chararcters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
   for (let i = numChar; i > 0; --i) {
@@ -33,6 +33,21 @@ function generateRandomString(numChar) {
   return string;
 };
 
+const registrationValid = (email, password) => {
+  if (email === "" || password === "") {
+    return false;
+  }
+  for (user in users) {
+    if (users[user].email === email) {
+      return false;
+    }
+  }
+  return true;
+};
+
+
+
+//activate cookies
 app.use(cookieParser());
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -45,27 +60,28 @@ app.get("/", (req, res) => {
   res.send('Hello!');
 });
 
+
+
 app.get("/register", (req, res) => {
   res.render("register")
 });
 
 
-
-
-
-
-
 //GO BACK TO THIS SPOT
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, user: {id: undefined}};
+  const templateVars = { urls: urlDatabase, user: { id: undefined } };
   res.render("urls_index", templateVars);
+});
+
+app.get("/404", (req, res) => {
+  res.render("404")
 });
 
 //WHEN USER IS LOGGED IT
 app.get("/urls/id/:userID", (req, res) => {
   const userInfo = users[req.params.userID];
   console.log(userInfo);
-  const templateVars = { urls: urlDatabase, user: userInfo};
+  const templateVars = { urls: urlDatabase, user: userInfo };
   res.render("urls_index", templateVars);
 });
 
@@ -88,6 +104,8 @@ app.get("/u/:shortURL", (req, res) => {
   res.redirect(longURL);
 });
 
+
+//POST COMMANDS
 app.post("/urls", (req, res) => {
   const _shortURL = generateRandomString(numChar);
   urlDatabase[_shortURL] = req.body.longURL;
@@ -116,25 +134,28 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-
-
 //  WORKING ON THIS
 app.post("/register", (req, res) => {
-  const ID = generateRandomString(numUserID);
+  
   const { email, password } = req.body;
-  let newUser = {
-    'id': ID,
-    'email': email,
-    'password': password
+  
+  if (registrationValid(email, password)) {
+    const ID = generateRandomString(numUserID);
+    let newUser = {
+      'id': ID,
+      'email': email,
+      'password': password
+    }
+    users[ID] = newUser;
+    res.cookie('user_id', ID);
+    res.redirect("/urls/id/" + ID);
+  } else{
+    res.redirect("/404")
   }
-  users[ID] = newUser;
-  res.cookie('user_id', ID);
-  // let templateVars = { urls: urlDatabase, user: users[ID]};
-
-  // // res.render("urls_index", templateVars);
-
-  res.redirect("/urls/id/" + ID);
 });
+
+
+
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
 });
