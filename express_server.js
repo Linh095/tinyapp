@@ -28,8 +28,8 @@ app.get("/login", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const ID = req.session.user_id;
-  if (checkID(ID)) {
-    const userUrls = urlsForUser(ID);
+  if (checkID(ID, users)) {
+    const userUrls = urlsForUser(ID, urlDatabase);
     const templateVars = { urls: userUrls, user: users[ID] };
     res.render("urls_index", templateVars);
   } else {
@@ -48,7 +48,7 @@ app.get("/403", (req, res) => {
 
 app.get("/urls/new", (req, res) => {
   const ID = req.session.user_id;
-  if (checkID(ID)) {
+  if (checkID(ID, users)) {
     const templateVars = { urls: urlDatabase, user: users[ID] };
     res.render("urls_new", templateVars);
 
@@ -59,7 +59,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
-  if (checkID(ID)) {
+  if (checkID(ID, users)) {
     let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL };
     res.render("urls_show", templateVars);
   } else {
@@ -83,7 +83,7 @@ app.post("/urls", (req, res) => {
 
 app.post("/urls/:shortURL/delete", (req, res) => {
   const ID = req.session.user_id;
-  if (checkID(ID)) {
+  if (checkID(ID, users)) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
   } else {
@@ -98,8 +98,8 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  const ID = getID(email);
-  if (ID !== undefined && loginValidation(ID, password)) {
+  const ID = getID(email, users);
+  if (ID !== undefined && loginValidation(ID, password, users)) {
     req.session.user_id = ID;
     res.redirect("/urls");
   } else {
@@ -117,7 +117,7 @@ app.post("/register", (req, res) => {
   const { email, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10);
 
-  if (registrationValid(email, password)) {
+  if (registrationValid(email, password, users)) {
     const ID = generateRandomString(numUserID);
     let newUser = {
       'id': ID,

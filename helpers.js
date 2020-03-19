@@ -1,3 +1,5 @@
+const bcrypt = require("bcrypt");
+
 const generateRandomString = (numChar) => {
   let string = '';
   const chararcters = '0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ';
@@ -7,44 +9,44 @@ const generateRandomString = (numChar) => {
   return string;
 };
 
-const loginValidation = (ID, password) => {
+const loginValidation = (ID, password, usersDatabase) => {
   if (password === "") {
     return false;
   }
-  return bcrypt.compareSync(password, users[ID].password);
+  return bcrypt.compareSync(password, usersDatabase[ID].password);
 };
 
-const registrationValid = (email, password) => {
+const registrationValid = (email, password, usersDatabase) => {
   if (email === "" || password === "") {
     return false;
   }
-  for (user in users) {
-    if (users[user].email === email) {
+  for (user in usersDatabase) {
+    if (usersDatabase[user].email === email) {
       return false;
     }
   }
   return true;
 };
 
-const getID = (email) => {
-  for (user in users) {
-    if (users[user].email === email) {
+const getID = (email, usersDatabase) => {
+  for (user in usersDatabase) {
+    if (usersDatabase[user].email === email) {
       return user;
     }
   }
   return undefined;
 }
 
-const checkID = (id) => {
-  for (user in users) {
-    if (users[user].id === id) {
+const checkID = (id, usersDatabase) => {
+  for (user in usersDatabase) {
+    if (usersDatabase[user].id === id) {
       return true;
     }
   }
   return false;
 }
 
-const urlsForUser = (id) => {
+const urlsForUser = (id, urlDatabase) => {
   let userURLs = {};
   for (shortURL in urlDatabase) {
     if (urlDatabase[shortURL].userID === id) {
