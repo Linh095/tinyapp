@@ -1,7 +1,7 @@
 const express = require("express");
 const app = express();
 const bcrypt = require("bcrypt");
-const cookieParser = require("cookie-parser");
+const cookieSession = require("cookie-session");
 const PORT = 8080; //default port for vagrant environment
 const bodyParser = require("body-parser");
 const numChar = 6; //number of characters in short url
@@ -91,7 +91,7 @@ const urlsForUser = (id) => {
 };
 
 //activate stuff (some preloaded)
-app.use(cookieParser());
+app.use(cookieSession());
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -114,7 +114,7 @@ app.get("/login", (req, res) => {
 
 //WORKING ON THIS ONE
 app.get("/urls", (req, res) => {
-  const ID = req.cookies["user_id"];
+  const ID = req.session.user_id;
   if (checkID(ID)) {
     const userUrls = urlsForUser(ID);
     const templateVars = { urls: userUrls, user: users[ID] };
@@ -134,7 +134,7 @@ app.get("/403", (req, res) => {
 });
 
 app.get("/urls/new", (req, res) => {
-  const ID = req.cookies["user_id"];
+  const ID = req.session.user_id;
   if (checkID(ID)) {
     const templateVars = { urls: urlDatabase, user: users[ID] };
     res.render("urls_new", templateVars);
@@ -145,7 +145,7 @@ app.get("/urls/new", (req, res) => {
 });
 
 app.get("/urls/:shortURL", (req, res) => {
-  const ID = req.cookies["user_id"];
+  const ID = req.session.user_id;
   if (checkID(ID)) {
     let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL].longURL };
     res.render("urls_show", templateVars);
@@ -163,13 +163,13 @@ app.get("/u/:shortURL", (req, res) => {
 //POST COMMANDS
 app.post("/urls", (req, res) => {
   const _shortURL = generateRandomString(numChar);
-  const ID = req.cookies["user_id"];
+  const ID = req.session.user_id;
   urlDatabase[_shortURL] = { longURL: req.body.longURL, userID: ID }
   res.redirect("/urls/" + _shortURL);
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
-  const ID = req.cookies["user_id"];
+  const ID = req.session.user_id;
   if (checkID(ID)) {
     delete urlDatabase[req.params.shortURL];
     res.redirect("/urls");
@@ -187,7 +187,7 @@ app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const ID = getID(email);
   if (ID && loginValidation(ID, password)) {
-    res.cookie("user_id", ID);
+    res.session.user_id = ID;
     res.redirect("/urls");
   } else {
     res.redirect("403");
@@ -195,7 +195,7 @@ app.post("/login", (req, res) => {
 });
 
 app.post("/logout", (req, res) => {
-  res.clearCookie("user_id");
+  res.session = null;
   res.redirect("/urls");
 });
 
@@ -212,7 +212,7 @@ app.post("/register", (req, res) => {
       'password': hashedPassword
     }
     users[ID] = newUser;
-    res.cookie('user_id', ID);
+    res.session.user_id = ID;
     res.redirect("/urls");
   } else {
     res.redirect("/404")
