@@ -91,7 +91,11 @@ const urlsForUser = (id) => {
 };
 
 //activate stuff (some preloaded)
-app.use(cookieSession());
+app.use(cookieSession({
+  name: 'session',
+  keys: new Keygrip(['key1', 'key2'], 'SHA384', 'base64'),
+  maxAge: 24*60*60*1000
+}));
 
 app.use(bodyParser.urlencoded({ extended: true }));
 
