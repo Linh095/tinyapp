@@ -80,6 +80,16 @@ const checkID = (id) => {
   return false;
 }
 
+const urlsForUser = (id) => {
+  let userURLs = {};
+  for (shortURL in urlDatabase) {
+    if (urlDatabase[shortURL].userID === id) {
+      userURLs[shortURL] = urlDatabase[shortURL];
+    }
+  }
+  console.log(userURLs);
+  return userURLs;
+};
 
 //activate stuff (some preloaded)
 app.use(cookieParser());
@@ -102,16 +112,18 @@ app.get("/login", (req, res) => {
   res.render("login", templateVars)
 });
 
+
+//WORKING ON THIS ONE
 app.get("/urls", (req, res) => {
   const ID = req.cookies["user_id"];
   if (checkID(ID)) {
-    const templateVars = { urls: urlDatabase, user: users[ID] };
+    const userUrls = urlsForUser(ID);
+    const templateVars = { urls: userUrls, user: users[ID] };
     res.render("urls_index", templateVars);
   } else {
     const templateVars = { urls: urlDatabase, user: { id: undefined } };
     res.render("logout_home", templateVars);
   }
-
 });
 
 app.get("/404", (req, res) => {
@@ -177,7 +189,7 @@ app.post("/login", (req, res) => {
   if (loginValidation(email, password)) {
     const ID = getID(email);
     res.cookie("user_id", ID);
-    res.redirect("/urls/id");
+    res.redirect("/urls");
   } else {
     res.redirect("403");
   }
