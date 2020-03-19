@@ -40,16 +40,11 @@ const generateRandomString = (numChar) => {
   return string;
 };
 
-const loginValidation = (email, password) => {
-  if (email === "" || password === "") {
+const loginValidation = (ID, password) => {
+  if (password === "") {
     return false;
   }
-  for (user in users) {
-    if (users[user].email === email && users[user].password === password) {
-      return true;
-    }
-  }
-  return false;
+  return bcrypt.compareSync(password, users[ID].password);
 };
 
 const registrationValid = (email, password) => {
@@ -70,6 +65,7 @@ const getID = (email) => {
       return user;
     }
   }
+  return undefined;
 }
 
 const checkID = (id) => {
@@ -88,7 +84,6 @@ const urlsForUser = (id) => {
       userURLs[shortURL] = urlDatabase[shortURL];
     }
   }
-  console.log(userURLs);
   return userURLs;
 };
 
@@ -187,8 +182,8 @@ app.post("/urls/:shortURL/edit", (req, res) => {
 
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
-  if (loginValidation(email, password)) {
-    const ID = getID(email);
+  const ID = getID(email);
+  if (ID && loginValidation(ID, password)) {
     res.cookie("user_id", ID);
     res.redirect("/urls");
   } else {
@@ -204,13 +199,14 @@ app.post("/logout", (req, res) => {
 app.post("/register", (req, res) => {
 
   const { email, password } = req.body;
+  const hashedPassword = bcrypt.hashSync(password, 10);
 
   if (registrationValid(email, password)) {
     const ID = generateRandomString(numUserID);
     let newUser = {
       'id': ID,
       'email': email,
-      'password': password
+      'password': hashedPassword
     }
     users[ID] = newUser;
     res.cookie('user_id', ID);
