@@ -91,7 +91,8 @@ app.get("/login", (req, res) => {
 });
 
 app.get("/urls", (req, res) => {
-  const templateVars = { urls: urlDatabase, user: { id: undefined } };
+  const ID = req.cookies["user_id"];
+  const templateVars = { urls: urlDatabase, user: { id: ID } };
   res.render("urls_index", templateVars);
 });
 
@@ -104,11 +105,11 @@ app.get("/403", (req, res) => {
 });
 
 //WHEN USER IS LOGGED IT
-app.get("/urls/id/:userID", (req, res) => {
-  const userInfo = users[req.params.userID];
-  const templateVars = { urls: urlDatabase, user: userInfo };
-  res.render("urls_index", templateVars);
-});
+// app.get("/urls/id/:userID", (req, res) => {
+//   const userInfo = users[req.params.userID];
+//   const templateVars = { urls: urlDatabase, user: userInfo };
+//   res.render("urls_index", templateVars);
+// });
 
 app.get("/urls.json", (req, res) => {
   res.json(urlDatabase);
@@ -147,17 +148,12 @@ app.post("/urls/:shortURL/edit", (req, res) => {
   res.redirect("/urls/" + req.params.shortURL);
 });
 
-
-//HERE
-
-
-
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   if (loginValidation(email, password)) {
     const ID = getID(email);
     res.cookie("user_id", ID);
-    res.redirect("/urls/id/" + ID);
+    res.redirect("/urls/id");
   } else{
     res.redirect("403");
   }
@@ -181,7 +177,7 @@ app.post("/register", (req, res) => {
     }
     users[ID] = newUser;
     res.cookie('user_id', ID);
-    res.redirect("/urls/id/" + ID);
+    res.redirect("/urls");
   } else{
     res.redirect("/404")
   }
