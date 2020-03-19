@@ -65,7 +65,17 @@ const getID = (email) => {
   }
 }
 
-//activate cookies
+const checkID = (id) => {
+  for (user in users) {
+    if (users[user].id === id) {
+      return true;
+    }
+  }
+  return false;
+}
+
+
+//activate stuff (some preloaded)
 app.use(cookieParser());
 
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -74,12 +84,8 @@ app.set('partial', '/partial/_header');
 
 app.set("view engine", "ejs");
 
-app.get("/", (req, res) => {
-  res.send('Hello!');
-});
 
-
-
+//GET REQUESTS
 app.get("/register", (req, res) => {
   const templateVars = { urls: urlDatabase, user: { id: undefined } };
   res.render("register", templateVars)
@@ -92,7 +98,13 @@ app.get("/login", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const ID = req.cookies["user_id"];
-  const templateVars = { urls: urlDatabase, user: { id: ID } };
+  let userInfo = {};
+  if (checkID(ID)) {
+    userInfo = users[ID];
+  } else{
+    userInfo = { id: undefined};
+  }
+  const templateVars = { urls: urlDatabase, user: userInfo };
   res.render("urls_index", templateVars);
 });
 
@@ -104,22 +116,17 @@ app.get("/403", (req, res) => {
   res.render("403")
 });
 
-//WHEN USER IS LOGGED IT
-// app.get("/urls/id/:userID", (req, res) => {
-//   const userInfo = users[req.params.userID];
-//   const templateVars = { urls: urlDatabase, user: userInfo };
-//   res.render("urls_index", templateVars);
-// });
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
 app.get("/urls/new", (req, res) => {
-  res.render("urls_new");
+  const ID = req.cookies["user_id"];
+  if (checkID(ID)) {
+    const templateVars = { urls: urlDatabase, user: users[ID] };
+    res.render("urls_new", templateVars);
+
+  } else{
+    res.redirect("/login");
+  }
 });
 
-//page to display sigle URL and its shorted form
 app.get("/urls/:shortURL", (req, res) => {
   let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL] };
   res.render("urls_show", templateVars);
@@ -184,6 +191,15 @@ app.post("/register", (req, res) => {
 });
 
 
+
+//pre loaded stuff
+app.get("/", (req, res) => {
+  res.send('Hello!');
+});
+
+app.get("/urls.json", (req, res) => {
+  res.json(urlDatabase);
+});
 
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
