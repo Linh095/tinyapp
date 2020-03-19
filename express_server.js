@@ -104,14 +104,14 @@ app.get("/login", (req, res) => {
 
 app.get("/urls", (req, res) => {
   const ID = req.cookies["user_id"];
-  let userInfo = {};
   if (checkID(ID)) {
-    userInfo = users[ID];
+    const templateVars = { urls: urlDatabase, user: users[ID] };
+    res.render("urls_index", templateVars);
   } else {
-    userInfo = { id: undefined };
+    const templateVars = { urls: urlDatabase, user: { id: undefined } };
+    res.render("logout_home", templateVars);
   }
-  const templateVars = { urls: urlDatabase, user: userInfo };
-  res.render("urls_index", templateVars);
+
 });
 
 app.get("/404", (req, res) => {
