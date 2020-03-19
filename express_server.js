@@ -2,54 +2,18 @@ const express = require("express");
 const app = express();
 const bcrypt = require("bcrypt");
 const cookieSession = require("cookie-session");
-// const Keygrip = require("keygrip");
-const PORT = 8080; //default port for vagrant environment
 const bodyParser = require("body-parser");
 const { generateRandomString, loginValidation, registrationValid, getID, checkID, urlsForUser } = require("./helpers");
+const { PORT, numChar, numUserID, users, urlDatabase } = require("./global_variables");
 
-
-const numChar = 6; //number of characters in short url
-const numUserID = 10; //number of characters for random user id
-
-const hashedPassword = bcrypt.hashSync("purple-monkey-dinosaur", 10);
-const hashedPassword2 = bcrypt.hashSync("dishwasher-funk", 10);
-
-const users = {
-  "userRandomID": {
-    id: "userRandomID",
-    email: "user@example.com",
-    password: hashedPassword
-  },
-  "user2RandomID": {
-    id: "user2RandomID",
-    email: "user2@example.com",
-    password: hashedPassword2
-  }
-}
-
-// const urlDatabase = {
-//   "b2xVn2": "http://www.lighthouselabs.ca",
-//   "9sm5xK": "http://www.google.com"
-// };
-
-const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "userRandomID" },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "user2RandomID" }
-};
-
-
-//activate stuff (some preloaded)
+//set keys for cookie encryption 
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2'],
 }));
-
 app.use(bodyParser.urlencoded({ extended: true }));
-
 app.set('partial', '/partial/_header');
-
 app.set("view engine", "ejs");
-
 
 //GET REQUESTS
 app.get("/register", (req, res) => {
@@ -62,8 +26,6 @@ app.get("/login", (req, res) => {
   res.render("login", templateVars)
 });
 
-
-//WORKING ON THIS ONE
 app.get("/urls", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID)) {
@@ -111,7 +73,7 @@ app.get("/u/:shortURL", (req, res) => {
 });
 
 
-//POST COMMANDS
+//POST REQUESTS
 app.post("/urls", (req, res) => {
   const _shortURL = generateRandomString(numChar);
   const ID = req.session.user_id;
