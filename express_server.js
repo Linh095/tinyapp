@@ -112,6 +112,10 @@ app.post("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
     urlDatabase[req.params.shortURL].longURL = req.body.editedURL;
+    
+    console.log(urlDatabase[req.params.shortURL].longURL);
+    console.log(req.body.editedURL);
+
     res.redirect("/urls");
   } else {
     res.redirect("/login");
@@ -121,17 +125,16 @@ app.post("/urls/:shortURL", (req, res) => {
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const ID = getID(email, users);
-  if (ID !== undefined && loginValidation(ID, password, users)) {
+  const _id = req.session.user_id;
+  
+  if (checkID(_id, users)) {
+    res.redirect("/urls");
+  } else if (ID !== undefined && loginValidation(ID, password, users)) {
     req.session.user_id = ID;
     res.redirect("/urls");
   } else {
     res.redirect("403");
   }
-});
-
-app.post("/logout", (req, res) => {
-  req.session = null;
-  res.redirect("/urls");
 });
 
 app.post("/register", (req, res) => {
@@ -154,21 +157,13 @@ app.post("/register", (req, res) => {
   }
 });
 
+app.post("/logout", (req, res) => {
+  req.session = null;
+  res.redirect("/urls");
+});
 
 
 //pre loaded stuff
-app.get("/", (req, res) => {
-  res.send('Hello!');
-});
-
-app.get("/urls.json", (req, res) => {
-  res.json(urlDatabase);
-});
-
 app.listen(PORT, () => {
   console.log(`Example app listening on port ${PORT}!`);
-});
-
-app.get("/hello", (req, res) => {
-  res.send("<html><body>Hello <b>World</b></b ody></html>\n");
 });
