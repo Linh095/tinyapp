@@ -32,7 +32,7 @@
             <td><%= urls[url].longURL %></td>
             <td><%= urls[url].date %></td>
             <td><%= urls[url].visits %></td>
-            <td><%= urls[url].visitors %></td>
+            <td><%= urls[url].visitors.length %></td>
             <td><form method="GET" action="/urls/<%= url %>">
               <button type="edit" class="btn btn-outline-primary">Edit</button>
             </form></td>

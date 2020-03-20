@@ -61,4 +61,8 @@ const getDate = () => {
   return `${date[1]} ${date[2]} ${date[3]}`;
 }
 
-module.exports = { generateRandomString, loginValidation, registrationValid, getID, checkID, urlsForUser, getDate }
+const updateVisitors = (id, urlDatabase) => {
+
+}
+
+module.exports = { generateRandomString, loginValidation, registrationValid, getID, checkID, urlsForUser, getDate, updateVisitors }

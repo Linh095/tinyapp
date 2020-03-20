@@ -90,14 +90,19 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
+  const _shortURL = req.params.shortUR;
   if (!checkID(ID, users)) {
     res.redirect("/login");
-  } else if (urlDatabase[req.params.shortURL] === undefined) {
+  } else if (urlDatabase[_shortURL] === undefined) {
     res.redirect("/404");
-  } else if (urlDatabase[req.params.shortURL].userID !== ID) {
+  } else if (urlDatabase[_shortURL].userID !== ID) {
     res.redirect("/_403");
+    urlDatabase[req.params.shortURL].visits += 1;
+
   } else {
-    let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]["longURL"], user: users[ID] };
+    urlDatabase[_shortURL].visits += 1;
+
+    let templateVars = { _shortURL : urlDatabase[req.params.shortURL]};
     res.render("urls_show", templateVars);
   }
 });
