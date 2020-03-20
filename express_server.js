@@ -90,12 +90,12 @@ app.get("/u/:shortURL", (req, res) => {
 
 
 //POST REQUESTS
-app.post("/urls/new", (req, res) => {
+app.post("/urls", (req, res) => {
   const _shortURL = generateRandomString(numChar);
   const ID = req.session.user_id;
   urlDatabase[_shortURL] = { longURL: req.body.longURL, userID: ID }
   console.log(urlDatabase);
-  res.redirect("/urls");
+  res.redirect("/urls/"+_shortURL);
 });
 
 app.post("/urls/:shortURL/delete", (req, res) => {
@@ -108,11 +108,11 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   }
 });
 
-app.post("/urls/:shortURL/edit", (req, res) => {
+app.post("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
     urlDatabase[req.params.shortURL].longURL = req.body.editedURL;
-    res.redirect("/urls/myurl");
+    res.redirect("/urls");
   } else {
     res.redirect("/login");
   }
