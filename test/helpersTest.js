@@ -19,6 +19,11 @@ const testUsers = {
   }
 }
 
+const urlDatabase = {
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "userRandomID" },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "user2RandomID" }
+};
+
 describe('loginValidation', function() {
   it('should return true if encrypted password and ID are in the database and match', function() {
     const validity = loginValidation("user2RandomID", "dishwasher-funk", testUsers);
@@ -80,4 +85,12 @@ describe('checkID', function() {
     assert.isFalse(checkID("", testUsers));
   });
 
+});
+
+describe('urlsForUser', function() {
+  it('should return an object with all the links created by a user', function() {
+    const userLinks = urlsForUser("userRandomID", urlDatabase);
+    const expectedOutput = { b6UTxQ: { longURL: 'https://www.tsn.ca', userID: 'userRandomID' } };
+    assert.deepEqual(userLinks, expectedOutput);
+  });
 });
