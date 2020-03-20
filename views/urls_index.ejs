@@ -13,7 +13,7 @@
   <%- include('partials/_header') %>
   <main style="margin: 1em;">
     <h3>My URLs</h3>
-    <table class="table">
+    <table class="table text-center">
       <thead>
         <tr>
           <th scope="col">Short URL</th>
@@ -28,7 +28,7 @@
       <tbody>
         <% for(let url in urls) { %>
           <tr>
-            <td href="#"><%= url %></td>
+            <td><a href="/u/<%= url %>"><%= url %></a></td>
             <td><%= urls[url].longURL %></td>
             <td><%= urls[url].date %></td>
             <td><%= urls[url].visits %></td>

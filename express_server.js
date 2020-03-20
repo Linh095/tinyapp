@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
 const methodOverride = require('method-override');
-const { generateRandomString, loginValidation, registrationValid, getID, checkID, urlsForUser } = require("./helpers");
+const { generateRandomString, loginValidation, registrationValid, getID, checkID, urlsForUser, getDate } = require("./helpers");
 const { PORT, numChar, numUserID, users, urlDatabase } = require("./global_variables");
 
 //set keys for cookie encryption - keys can be changed
@@ -106,7 +106,8 @@ app.get("/u/:shortURL", (req, res) => {
 app.post("/urls", (req, res) => {
   const _shortURL = generateRandomString(numChar);
   const ID = req.session.user_id;
-  urlDatabase[_shortURL] = { longURL: req.body.longURL, userID: ID }
+  const date = getDate();
+  urlDatabase[_shortURL] = { longURL: req.body.longURL, userID: ID, }
   res.redirect("/urls/"+_shortURL);
 });
 
