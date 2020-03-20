@@ -53,6 +53,10 @@ app.get("/404", (req, res) => {
   res.render("404")
 });
 
+app.get("/_404", (req, res) => {
+  res.render("_404")
+});
+
 app.get("/403", (req, res) => {
   res.render("403")
 });
@@ -72,16 +76,16 @@ app.get("/urls/:shortURL", (req, res) => {
   if (!checkID(ID, users)) {
     res.redirect("/login");
   } else if (urlDatabase[req.params.shortURL] === undefined){
-    res.redirect("/404");
+    res.redirect("/_404");
   } else {
-    let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]["longURL"] };
+    let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]["longURL"], user: users[ID] };
     res.render("urls_show", templateVars);
   }
 });
 
 app.get("/u/:shortURL", (req, res) => {
   if (urlDatabase[req.params.shortURL] === undefined){
-    res.redirect("/404");
+    res.redirect("/_404");
   } else {
     const longURL = urlDatabase[req.params.shortURL]["longURL"];
     res.redirect(longURL);
@@ -94,7 +98,7 @@ app.post("/urls", (req, res) => {
   const _shortURL = generateRandomString(numChar);
   const ID = req.session.user_id;
   urlDatabase[_shortURL] = { longURL: req.body.longURL, userID: ID }
-  console.log(urlDatabase);
+  console.log("urlDatabase \n", urlDatabase);
   res.redirect("/urls/"+_shortURL);
 });
 
@@ -113,8 +117,8 @@ app.post("/urls/:shortURL", (req, res) => {
   if (checkID(ID, users)) {
     urlDatabase[req.params.shortURL].longURL = req.body.editedURL;
     
-    console.log(urlDatabase[req.params.shortURL].longURL);
-    console.log(req.body.editedURL);
+    console.log("longURL", urlDatabase[req.params.shortURL].longURL);
+    console.log("editedURL", req.body.editedURL);
 
     res.redirect("/urls");
   } else {
@@ -141,8 +145,11 @@ app.post("/register", (req, res) => {
 
   const { email, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10);
-
-  if (registrationValid(email, password, users)) {
+  const _id = req.session.user_id;
+  
+  if (checkID(_id, users)) {
+    res.redirect("/urls");
+  } else if (registrationValid(email, password, users)) {
     const ID = generateRandomString(numUserID);
     let newUser = {
       'id': ID,
