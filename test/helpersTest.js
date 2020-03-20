@@ -66,3 +66,18 @@ describe('getID', function() {
     assert.equal(user, expectedOutput);
   });
 });
+
+describe('checkID', function() {
+  it('should return true if a user ID exist in the database', function() {
+    assert.isTrue(checkID("userRandomID", testUsers));
+  });
+
+  it('should return false if a user ID does not exist in the database', function() {
+    assert.isFalse(checkID("randomID", testUsers));
+  });
+
+  it('should return false if a user ID is an empty string', function() {
+    assert.isFalse(checkID("", testUsers));
+  });
+
+});
