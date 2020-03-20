@@ -46,13 +46,23 @@ app.get("/", (req, res) => {
 });
 
 app.get("/register", (req, res) => {
-  const templateVars = { urls: urlDatabase, user: { id: undefined } };
-  res.render("register", templateVars)
+  const ID = req.session.user_id;
+  if (checkID(ID, users)) {
+    res.redirect("/urls")
+  } else {
+    const templateVars = { urls: urlDatabase, user: { id: undefined } };
+    res.render("register", templateVars);
+  }
 });
 
 app.get("/login", (req, res) => {
-  const templateVars = { urls: urlDatabase, user: { id: undefined } };
-  res.render("login", templateVars)
+  const ID = req.session.user_id;
+  if (checkID(ID, users)) {
+    res.redirect("/urls")
+  } else {
+    const templateVars = { urls: urlDatabase, user: { id: undefined } };
+  res.render("login", templateVars);
+  }
 });
 
 app.get("/urls", (req, res) => {
@@ -82,9 +92,9 @@ app.get("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
   if (!checkID(ID, users)) {
     res.redirect("/login");
-  } else if (urlDatabase[req.params.shortURL] === undefined){
+  } else if (urlDatabase[req.params.shortURL] === undefined) {
     res.redirect("/404");
-  } else if (urlDatabase[req.params.shortURL].userID !== ID){
+  } else if (urlDatabase[req.params.shortURL].userID !== ID) {
     res.redirect("/_403");
   } else {
     let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]["longURL"], user: users[ID] };
@@ -93,7 +103,7 @@ app.get("/urls/:shortURL", (req, res) => {
 });
 
 app.get("/u/:shortURL", (req, res) => {
-  if (urlDatabase[req.params.shortURL] === undefined){
+  if (urlDatabase[req.params.shortURL] === undefined) {
     res.redirect("/_404");
   } else {
     const longURL = urlDatabase[req.params.shortURL]["longURL"];
@@ -107,8 +117,8 @@ app.post("/urls", (req, res) => {
   const _shortURL = generateRandomString(numChar);
   const ID = req.session.user_id;
   const _date = getDate();
-  urlDatabase[_shortURL] = { longURL: req.body.longURL, userID: ID, date: _date, visits: 1, visitors: 1}
-  res.redirect("/urls/"+_shortURL);
+  urlDatabase[_shortURL] = { longURL: req.body.longURL, userID: ID, date: _date, visits: 1, visitors: 1 }
+  res.redirect("/urls/" + _shortURL);
 });
 
 app.delete("/urls/:shortURL", (req, res) => {
@@ -135,7 +145,7 @@ app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const ID = getID(email, users);
   const _id = req.session.user_id;
-  
+
   if (checkID(_id, users)) {
     res.redirect("/urls");
   } else if (ID !== undefined && loginValidation(ID, password, users)) {
@@ -151,7 +161,7 @@ app.post("/register", (req, res) => {
   const { email, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10);
   const _id = req.session.user_id;
-  
+
   if (checkID(_id, users)) {
     res.redirect("/urls");
   } else if (registrationValid(email, password, users)) {
