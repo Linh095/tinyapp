@@ -20,6 +20,31 @@ app.set("view engine", "ejs");
 
 
 //GET REQUESTS
+app.get("/404", (req, res) => {
+  res.render("404")
+});
+
+app.get("/_404", (req, res) => {
+  res.render("_404")
+});
+
+app.get("/403", (req, res) => {
+  res.render("403")
+});
+
+app.get("/_403", (req, res) => {
+  res.render("_403")
+});
+
+app.get("/", (req, res) => {
+  const ID = req.session.user_id;
+  if (checkID(ID, users)) {
+    res.redirect("/urls");
+  } else {
+    res.redirect("/login");
+  }
+});
+
 app.get("/register", (req, res) => {
   const templateVars = { urls: urlDatabase, user: { id: undefined } };
   res.render("register", templateVars)
@@ -43,18 +68,6 @@ app.get("/urls", (req, res) => {
   }
 });
 
-app.get("/404", (req, res) => {
-  res.render("404")
-});
-
-app.get("/_404", (req, res) => {
-  res.render("_404")
-});
-
-app.get("/403", (req, res) => {
-  res.render("403")
-});
-
 app.get("/urls/new", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
@@ -67,13 +80,12 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
-  const urlsForUser = urlsForUser(ID, urlDatabase);
   if (!checkID(ID, users)) {
     res.redirect("/login");
   } else if (urlDatabase[req.params.shortURL] === undefined){
     res.redirect("/404");
-  } else if (!urlsForUser[req.params.shortURL]){
-    res.redirect("/_403")
+  } else if (urlDatabase[req.params.shortURL].userID !== ID){
+    res.redirect("/_403");
   } else {
     let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]["longURL"], user: users[ID] };
     res.render("urls_show", templateVars);
