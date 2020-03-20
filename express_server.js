@@ -90,7 +90,7 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
-  const _shortURL = req.params.shortUR;
+  const _shortURL = req.params.shortURL;
   if (!checkID(ID, users)) {
     res.redirect("/login");
   } else if (urlDatabase[_shortURL] === undefined) {
@@ -98,11 +98,17 @@ app.get("/urls/:shortURL", (req, res) => {
   } else if (urlDatabase[_shortURL].userID !== ID) {
     urlDatabase[_shortURL].visits += 1;
     urlDatabase[_shortURL].visitors = updateVisitors(_shortURL, ID, urlDatabase);
-    let templateVars = { shortURL: _shortURL, info: urlDatabase[_shortURL], owner: false};
+    let templateVars = { shortURL: _shortURL, info: urlDatabase[_shortURL], owner: false };
     res.render("urls_show", templateVars);
   } else {
+
+    console.log("info", urlDatabase[_shortURL]);
+
     urlDatabase[_shortURL].visits += 1;
     let templateVars = { shortURL: _shortURL, info: urlDatabase[_shortURL], owner: true};
+
+    console.log(templateVars);
+
     res.render("urls_show", templateVars);
   }
 });
