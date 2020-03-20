@@ -67,11 +67,13 @@ app.get("/urls/new", (req, res) => {
 
 app.get("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
+  const urlsForUser = urlsForUser(ID, urlDatabase);
   if (!checkID(ID, users)) {
     res.redirect("/login");
   } else if (urlDatabase[req.params.shortURL] === undefined){
-    res.redirect("/_403");
-    //MAKING THIS PAGE
+    res.redirect("/404");
+  } else if (!urlsForUser[req.params.shortURL]){
+    res.redirect("/_403")
   } else {
     let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]["longURL"], user: users[ID] };
     res.render("urls_show", templateVars);
