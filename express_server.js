@@ -33,19 +33,9 @@ app.get("/urls", (req, res) => {
     const templateVars = { urls: userUrls, user: users[ID] };
     res.render("urls_index", templateVars);
   } else {
+    req.session = null;
     const templateVars = { urls: urlDatabase, user: { id: undefined } };
     res.render("logout_home", templateVars);
-  }
-});
-
-app.get("/urls/myurl", (req, res) => {
-  const ID = req.session.user_id;
-  if (checkID(ID, users)) {
-    const userUrls = urlsForUser(ID, urlDatabase);
-    const templateVars = { urls: userUrls, user: users[ID] };
-    res.render("urls_index", templateVars);
-  } else {
-    res.redirect("/login");
   }
 });
 
@@ -86,6 +76,7 @@ app.get("/urls/:shortURL", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   if (urlDatabase[req.params.shortURL] === undefined){
     res.redirect("/_404");
+    console.log("shortURL", urlDatabase[req.params.shortURL]);
   } else {
     const longURL = urlDatabase[req.params.shortURL]["longURL"];
     res.redirect(longURL);
