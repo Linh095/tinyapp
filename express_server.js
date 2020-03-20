@@ -106,8 +106,8 @@ app.get("/u/:shortURL", (req, res) => {
 app.post("/urls", (req, res) => {
   const _shortURL = generateRandomString(numChar);
   const ID = req.session.user_id;
-  const date = getDate();
-  urlDatabase[_shortURL] = { longURL: req.body.longURL, userID: ID, }
+  const _date = getDate();
+  urlDatabase[_shortURL] = { longURL: req.body.longURL, userID: ID, date: _date, visits: 1, visitors: 1}
   res.redirect("/urls/"+_shortURL);
 });
 
