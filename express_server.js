@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
 const methodOverride = require('method-override');
-const { generateRandomString, loginValidation, registrationValid, getID, checkID, urlsForUser, getDate } = require("./helpers");
+const { generateRandomString, loginValidation, registrationValid, getID, checkID, urlsForUser, getDate, updateVisitors } = require("./helpers");
 const { PORT, numChar, numUserID, users, urlDatabase } = require("./global_variables");
 
 //set keys for cookie encryption - keys can be changed
@@ -96,13 +96,13 @@ app.get("/urls/:shortURL", (req, res) => {
   } else if (urlDatabase[_shortURL] === undefined) {
     res.redirect("/404");
   } else if (urlDatabase[_shortURL].userID !== ID) {
-    res.redirect("/_403");
-    urlDatabase[req.params.shortURL].visits += 1;
-
+    urlDatabase[_shortURL].visits += 1;
+    urlDatabase[_shortURL].visitors = updateVisitors(_shortURL, ID, urlDatabase);
+    let templateVars = { shortURL: _shortURL, info: urlDatabase[_shortURL], owner: false};
+    res.render("urls_show", templateVars);
   } else {
     urlDatabase[_shortURL].visits += 1;
-
-    let templateVars = { _shortURL : urlDatabase[req.params.shortURL]};
+    let templateVars = { shortURL: _shortURL, info: urlDatabase[_shortURL], owner: true};
     res.render("urls_show", templateVars);
   }
 });

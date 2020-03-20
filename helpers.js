@@ -61,8 +61,14 @@ const getDate = () => {
   return `${date[1]} ${date[2]} ${date[3]}`;
 }
 
-const updateVisitors = (id, urlDatabase) => {
-
+const updateVisitors = (shortURL, ID, urlDatabase) => {
+  let _visitors = urlDatabase[shortURL].visitors;
+  for (const visitor of _visitors) {
+    if (ID === visitor) {
+      return _visitors;
+    }
+  }
+  return _visitors.push(ID)
 }
 
 module.exports = { generateRandomString, loginValidation, registrationValid, getID, checkID, urlsForUser, getDate, updateVisitors }

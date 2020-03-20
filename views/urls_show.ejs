@@ -15,7 +15,11 @@
     <div class="card-body">
       <h5 class="card-title">TinyURL for: <%= longURL %></h5>
       <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>
+      <p>Date Created: <%  %> </p>
     </div>
+
+    <% if (owner) { %> 
+
     <div class="card-footer text-muted text-center">
       <form class="form-inline flex-column" action="/urls/<%= shortURL %>?_method=PUT" method="POST">
         <input type="hidden" name="_method" value="PUT">
@@ -28,6 +32,7 @@
         </div>
       </form>
     </div>
+  <% } %> 
   </div>
   <!-- Bootstrap JS -->
   <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
