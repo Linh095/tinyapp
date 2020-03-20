@@ -3,6 +3,7 @@ const app = express();
 const bcrypt = require("bcrypt");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
+
 const { generateRandomString, loginValidation, registrationValid, getID, checkID, urlsForUser } = require("./helpers");
 const { PORT, numChar, numUserID, users, urlDatabase } = require("./global_variables");
 
@@ -76,7 +77,6 @@ app.get("/urls/:shortURL", (req, res) => {
 app.get("/u/:shortURL", (req, res) => {
   if (urlDatabase[req.params.shortURL] === undefined){
     res.redirect("/_404");
-    console.log("shortURL", urlDatabase[req.params.shortURL]);
   } else {
     const longURL = urlDatabase[req.params.shortURL]["longURL"];
     res.redirect(longURL);
@@ -89,7 +89,6 @@ app.post("/urls", (req, res) => {
   const _shortURL = generateRandomString(numChar);
   const ID = req.session.user_id;
   urlDatabase[_shortURL] = { longURL: req.body.longURL, userID: ID }
-  console.log("urlDatabase \n", urlDatabase);
   res.redirect("/urls/"+_shortURL);
 });
 
@@ -107,10 +106,6 @@ app.post("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
     urlDatabase[req.params.shortURL].longURL = req.body.editedURL;
-    
-    console.log("longURL", urlDatabase[req.params.shortURL].longURL);
-    console.log("editedURL", req.body.editedURL);
-
     res.redirect("/urls");
   } else {
     res.redirect("/login");
