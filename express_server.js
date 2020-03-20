@@ -3,18 +3,21 @@ const app = express();
 const bcrypt = require("bcrypt");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
-
+const methodOverride = require('method-override');
 const { generateRandomString, loginValidation, registrationValid, getID, checkID, urlsForUser } = require("./helpers");
 const { PORT, numChar, numUserID, users, urlDatabase } = require("./global_variables");
 
-//set keys for cookie encryption 
+//set keys for cookie encryption - keys can be changed
 app.use(cookieSession({
   name: 'session',
   keys: ['key1', 'key2'],
 }));
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(methodOverride('_method'));
+
 app.set('partial', '/partial/_header');
 app.set("view engine", "ejs");
+
 
 //GET REQUESTS
 app.get("/register", (req, res) => {
@@ -92,7 +95,8 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls/"+_shortURL);
 });
 
-app.post("/urls/:shortURL/delete", (req, res) => {
+//WORKING HERE USED TO BE POST DELETE
+app.delete("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
     delete urlDatabase[req.params.shortURL];
@@ -102,7 +106,8 @@ app.post("/urls/:shortURL/delete", (req, res) => {
   }
 });
 
-app.post("/urls/:shortURL", (req, res) => {
+// WORKING HERE USED TO BE POST
+app.put("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
     urlDatabase[req.params.shortURL].longURL = req.body.editedURL;

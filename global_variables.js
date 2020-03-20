@@ -6,7 +6,7 @@ const numChar = 6; //number of characters in short url
 const numUserID = 10; //number of characters for random user id
 
 //encrypt password for example users
-const hashedPassword = bcrypt.hashSync("purple-monkey-dinosaur", 10);
+const hashedPassword = bcrypt.hashSync("dinosaur", 10);
 const hashedPassword2 = bcrypt.hashSync("dishwasher-funk", 10);
 
 const users = {

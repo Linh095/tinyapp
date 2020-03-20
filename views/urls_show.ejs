@@ -17,7 +17,8 @@
       <p class="card-text">Short URL: <a href="/u/<%= shortURL %>"><%= shortURL %></a></p>
     </div>
     <div class="card-footer text-muted text-center">
-      <form class="form-inline flex-column" action="/urls/<%= shortURL %>" method="POST">
+      <form class="form-inline flex-column" action="/urls/<%= shortURL %>?_method=PUT" method="POST">
+        <input type="hidden" name="_method" value="PUT">
         <h2><label for="longURL">Edit</label></h2>
         <div class="d-flex justify-content-center align-items-center pb-md-4">
           <h4>New URL:</h4>
