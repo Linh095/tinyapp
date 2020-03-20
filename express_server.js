@@ -70,7 +70,8 @@ app.get("/urls/:shortURL", (req, res) => {
   if (!checkID(ID, users)) {
     res.redirect("/login");
   } else if (urlDatabase[req.params.shortURL] === undefined){
-    res.redirect("/_404");
+    res.redirect("/_403");
+    //MAKING THIS PAGE
   } else {
     let templateVars = { shortURL: req.params.shortURL, longURL: urlDatabase[req.params.shortURL]["longURL"], user: users[ID] };
     res.render("urls_show", templateVars);
@@ -95,7 +96,6 @@ app.post("/urls", (req, res) => {
   res.redirect("/urls/"+_shortURL);
 });
 
-//WORKING HERE USED TO BE POST DELETE
 app.delete("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
@@ -106,7 +106,6 @@ app.delete("/urls/:shortURL", (req, res) => {
   }
 });
 
-// WORKING HERE USED TO BE POST
 app.put("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
