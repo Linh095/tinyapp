@@ -50,6 +50,7 @@ app.get("/register", (req, res) => {
   if (checkID(ID, users)) {
     res.redirect("/urls")
   } else {
+    //************************ */
     const templateVars = { urls: urlDatabase, user: { id: undefined } };
     res.render("register", templateVars);
   }
@@ -60,6 +61,7 @@ app.get("/login", (req, res) => {
   if (checkID(ID, users)) {
     res.redirect("/urls")
   } else {
+    //************************ */
     const templateVars = { urls: urlDatabase, user: { id: undefined } };
   res.render("login", templateVars);
   }
@@ -81,6 +83,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
+    //************************ */
     const templateVars = { urls: urlDatabase, user: users[ID] };
     res.render("urls_new", templateVars);
   } else {
@@ -91,24 +94,28 @@ app.get("/urls/new", (req, res) => {
 app.get("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
   const _shortURL = req.params.shortURL;
-  if (!checkID(ID, users)) {
-    res.redirect("/login");
-  } else if (urlDatabase[_shortURL] === undefined) {
+
+  //check if the url actually exists and if the user is logged in
+   if (urlDatabase[_shortURL] === undefined) {
     res.redirect("/404");
+   } else if (!checkID(ID, users)) {
+      res.redirect("/login");
+
+  //if the user is not the owner of the short url, they can still see it but they cannot edit it (visit and visitor counted)
   } else if (urlDatabase[_shortURL].userID !== ID) {
     urlDatabase[_shortURL].visits += 1;
     urlDatabase[_shortURL].visitors = updateVisitors(_shortURL, ID, urlDatabase);
-    let templateVars = { shortURL: _shortURL, info: urlDatabase[_shortURL], owner: false };
+
+    //************************ */
+    let templateVars = { shortURL: _shortURL, info: urlDatabase[_shortURL], owner: false, id: true };
     res.render("urls_show", templateVars);
+
+  //if the user is the owner of the short url, they can edit
   } else {
-
-    console.log("info", urlDatabase[_shortURL]);
-
     urlDatabase[_shortURL].visits += 1;
-    let templateVars = { shortURL: _shortURL, info: urlDatabase[_shortURL], owner: true};
 
-    console.log(templateVars);
-
+    //************************ */
+    let templateVars = { shortURL: _shortURL, info: urlDatabase[_shortURL], owner: true, id: true};
     res.render("urls_show", templateVars);
   }
 });

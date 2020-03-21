@@ -45,6 +45,10 @@ const checkID = (id, usersDatabase) => {
   }
   return false;
 }
+//************************ */
+const checkOwnership = (id, shortURL, urlDatabase) => {
+
+}
 
 const urlsForUser = (id, urlDatabase) => {
   let userURLs = {};
@@ -71,4 +75,13 @@ const updateVisitors = (shortURL, ID, urlDatabase) => {
   return _visitors.push(ID)
 }
 
+const makeTempVars = (ID, _shortURL, urlDatabase, users) => {
+  
+  let tempVars = {shortURL: _shortURL,
+                  info: urlDatabase[_shortURL],
+                  owner: ,
+                  loggedIn: };
+
+  return tempVars;
+}
 module.exports = { generateRandomString, loginValidation, registrationValid, getID, checkID, urlsForUser, getDate, updateVisitors }
