@@ -79,11 +79,27 @@ const updateVisitors = (shortURL, ID, urlDatabase) => {
   return _visitors.push(ID)
 };
 
+const updateVisitingInfo = (shortURL, ID, urlDatabase) => {
+  let info = urlDatabase[shortURL];
+  info[visits] += 1;
+  info[visitors] = updateVisitors(shortURL, ID, urlDatabase);
+  return info;
+}
+
 const makeTempVars = (ID, _shortURL, urlDatabase, users) => {
   const tempVars = {
     shortURL: _shortURL,
     info: urlDatabase[_shortURL],
     owner: checkOwnership(ID, _shortURL, urlDatabase),
+    loggedIn: checkID(ID, users)
+  };
+  return tempVars;
+};
+
+const makeTempVarsIndex = (ID, urlDatabase, users) => {
+  const tempVars = {
+    url: urlsForUser(ID, urlDatabase),
+    info: {email: users[ID].email},
     loggedIn: checkID(ID, users)
   };
   return tempVars;
@@ -109,10 +125,4 @@ const makeUserAccount = (email, password, ID) => {
   return templateUser;
 }
 
-const updateVisitingInfo = (shortURL, ID, urlDatabase) => {
-  let info = urlDatabase[shortURL];
-  info[visits] += 1;
-  info[visitors] = checkOwnership(shortURL, ID, urlDatabase);
-  return info;
-}
-module.exports = { generateRandomString, loginValidation, registrationValid, getID, checkID, checkOwnership, urlsForUser, makeTempVars, makeNewURL, makeUserAccount, updateVisitingInfo }
+module.exports = { generateRandomString, loginValidation, registrationValid, getID, checkID, makeTempVars, makeNewURL, makeUserAccount, makeTempVarsIndex, updateVisitingInfo }

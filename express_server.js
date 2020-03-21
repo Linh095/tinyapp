@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
 const methodOverride = require('method-override');
-const { generateRandomString, loginValidation, registrationValid, getID, checkID, urlsForUser, makeTempVars, makeNewURL, makeUserAccount, updateVisitingInfo } = require("./helpers");
+const { generateRandomString, loginValidation, registrationValid, getID, checkID, makeTempVars, makeNewURL, makeUserAccount, makeTempVarsIndex, updateVisitingInfo } = require("./helpers");
 const { PORT, numChar, numUserID, users, urlDatabase } = require("./global_variables");
 
 //set keys for cookie encryption - keys can be changed
@@ -45,8 +45,7 @@ app.get("/", (req, res) => {
 app.get("/urls", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
-    const userUrls = urlsForUser(ID, urlDatabase);
-    const templateVars = { urls: userUrls, loggedIn: true };
+    const templateVars = makeTempVarsIndex(ID, urlDatabase, users);
     res.render("urls_index", templateVars);
   } else {
     req.session = null;
