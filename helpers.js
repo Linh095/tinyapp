@@ -112,7 +112,7 @@ const makeUserAccount = (email, password, ID) => {
 const updateVisitingInfo = (shortURL, ID, urlDatabase) => {
   let info = urlDatabase[shortURL];
   info[visits] += 1;
-  info[visitors] = updateVisitors(shortURL, ID, urlDatabase);
+  info[visitors] = checkOwnership(shortURL, ID, urlDatabase);
   return info;
 }
 module.exports = { generateRandomString, loginValidation, registrationValid, getID, checkID, checkOwnership, urlsForUser, makeTempVars, makeNewURL, makeUserAccount, updateVisitingInfo }

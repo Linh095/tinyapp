@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
 const methodOverride = require('method-override');
-const { generateRandomString, loginValidation, registrationValid, getID, checkID, checkOwnership, urlsForUser, makeTempVars, makeNewURL, makeUserAccount, updateVisitingInfo } = require("./helpers");
+const { generateRandomString, loginValidation, registrationValid, getID, checkID, urlsForUser, makeTempVars, makeNewURL, makeUserAccount, updateVisitingInfo } = require("./helpers");
 const { PORT, numChar, numUserID, users, urlDatabase } = require("./global_variables");
 
 //set keys for cookie encryption - keys can be changed
@@ -96,13 +96,16 @@ app.get("/urls/:shortURL", (req, res) => {
   } else if (!checkID(ID, users)) {
     res.redirect("/login");
   } else if (urlDatabase[_shortURL].userID !== ID) {
+    urlDatabase[_shortURL] = updateVisitingInfo(_shortURL, ID, urlDatabase);
     const templateVars = makeTempVars(ID, _shortURL, urlDatabase, users);
     res.render("urls_show", templateVars);
   } else {
+    urlDatabase[_shortURL] = updateVisitingInfo(_shortURL, ID, urlDatabase);
     const templateVars = makeTempVars(ID, _shortURL, urlDatabase, users);
     res.render("urls_show", templateVars);
   }
 });
+
 //redirect short URL to sight of corresponding long URL
 app.get("/u/:shortURL", (req, res) => {
   if (urlDatabase[req.params.shortURL] === undefined) {
