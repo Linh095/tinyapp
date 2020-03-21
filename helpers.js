@@ -72,21 +72,15 @@ const getDate = () => {
 
 const updateVisitors = (shortURL, ID, urlDatabase) => {
   let _visitors = urlDatabase[shortURL].visitors;
-  console.log(_visitors);
-
-  _visitors.forEach(element => {
-    if (ID === element) {
+  
+  for (const visitor of _visitors) {
+    if (ID === visitor) {
       return _visitors;
     }
-  });
-  // for (const visitor of _visitors) {
-  //   console.log(visitor);
-    
-  // }
-  return _visitors.push(ID)
+  }
+  _visitors.push(ID);
+  return _visitors;
 };
-
-console.log(updateVisitors("b6UTxQ", "userRandomID", urlDatabase));
 
 const updateVisitingInfo = (shortURL, ID, urlDatabase) => {
   let info = urlDatabase[shortURL];
