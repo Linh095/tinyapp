@@ -1,5 +1,4 @@
 const bcrypt = require("bcrypt");
-const  { PORT, numChar, numUserID, users, urlDatabase } = require("./global_variables");
 
 const generateRandomString = (numChar) => {
   let string = '';
