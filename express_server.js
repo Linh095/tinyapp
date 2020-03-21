@@ -19,7 +19,7 @@ app.set('partial', '/partial/_header');
 app.set("view engine", "ejs");
 
 
-//GET REQUESTS: error pages, 
+//GET REQUESTS: error pages
 app.get("/404", (req, res) => {
   res.render("404")
 });
@@ -32,12 +32,26 @@ app.get("/403", (req, res) => {
   res.render("403")
 });
 
+//home page, register, login page; redirect according to if the user is logged in or registed
 app.get("/", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
     res.redirect("/urls");
   } else {
     res.redirect("/login");
+  }
+});
+
+app.get("/urls", (req, res) => {
+  const ID = req.session.user_id;
+  if (checkID(ID, users)) {
+    const userUrls = urlsForUser(ID, urlDatabase);
+    const templateVars = { urls: userUrls, loggedIn: true };
+    res.render("urls_index", templateVars);
+  } else {
+    req.session = null;
+    const templateVars = { loggedIn: false };
+    res.render("logout_home", templateVars);
   }
 });
 
@@ -61,19 +75,7 @@ app.get("/login", (req, res) => {
   }
 });
 
-app.get("/urls", (req, res) => {
-  const ID = req.session.user_id;
-  if (checkID(ID, users)) {
-    const userUrls = urlsForUser(ID, urlDatabase);
-    const templateVars = { urls: userUrls, loggedIn: true };
-    res.render("urls_index", templateVars);
-  } else {
-    req.session = null;
-    const templateVars = { loggedIn: false };
-    res.render("logout_home", templateVars);
-  }
-});
-
+//get page that enables logged in user to make new links
 app.get("/urls/new", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
@@ -84,35 +86,24 @@ app.get("/urls/new", (req, res) => {
   }
 });
 
+//get page linked to short url; check if the url actually exists and if the user is logged in; if the user is not the owner of the short url, they can still see it but they cannot edit it (count visit and visitor), owner can edit
 app.get("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
   const _shortURL = req.params.shortURL;
 
-  //check if the url actually exists and if the user is logged in
   if (urlDatabase[_shortURL] === undefined) {
     res.redirect("/404");
   } else if (!checkID(ID, users)) {
     res.redirect("/login");
-
-    //if the user is not the owner of the short url, they can still see it but they cannot edit it (visit and visitor counted)
   } else if (urlDatabase[_shortURL].userID !== ID) {
-    urlDatabase[_shortURL].visits += 1;
-    urlDatabase[_shortURL].visitors = updateVisitors(_shortURL, ID, urlDatabase);
-
-    //************************ */
-    let templateVars = { shortURL: _shortURL, info: urlDatabase[_shortURL], owner: false, id: true };
+    const templateVars = makeTempVars(ID, _shortURL, urlDatabase, users);
     res.render("urls_show", templateVars);
-
-    //if the user is the owner of the short url, they can edit
   } else {
-    urlDatabase[_shortURL].visits += 1;
-
-    //************************ */
-    let templateVars = { shortURL: _shortURL, info: urlDatabase[_shortURL], owner: true, id: true };
+    const templateVars = makeTempVars(ID, _shortURL, urlDatabase, users);
     res.render("urls_show", templateVars);
   }
 });
-
+//redirect short URL to sight of corresponding long URL
 app.get("/u/:shortURL", (req, res) => {
   if (urlDatabase[req.params.shortURL] === undefined) {
     res.redirect("/_404");
@@ -122,16 +113,15 @@ app.get("/u/:shortURL", (req, res) => {
   }
 });
 
-
-//POST REQUESTS
+//Post request to add new url to database
 app.post("/urls", (req, res) => {
   const _shortURL = generateRandomString(numChar);
   const ID = req.session.user_id;
-  const _date = getDate();
-  urlDatabase[_shortURL] = { longURL: req.body.longURL, userID: ID, date: _date, visits: 1, visitors: 1 }
+  urlDatabase[_shortURL] = makeNewURL(ID, req.body.longURL);
   res.redirect("/urls/" + _shortURL);
 });
 
+//delete shortURL and redirect to homepage
 app.delete("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
@@ -142,6 +132,7 @@ app.delete("/urls/:shortURL", (req, res) => {
   }
 });
 
+//edit long url for short url in database
 app.put("/urls/:shortURL", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
@@ -152,6 +143,7 @@ app.put("/urls/:shortURL", (req, res) => {
   }
 });
 
+//login post: if user is already logged in, redirect to home; if they are not logged in and have valide password + email redirect to logged in home; if email or password not valid, redirect to error page
 app.post("/login", (req, res) => {
   const { email, password } = req.body;
   const ID = getID(email, users);
@@ -167,8 +159,8 @@ app.post("/login", (req, res) => {
   }
 });
 
+//register post: if user is already logged in, redirect to home; if they are not logged in and have valide email and password, make new account
 app.post("/register", (req, res) => {
-
   const { email, password } = req.body;
   const hashedPassword = bcrypt.hashSync(password, 10);
   const _id = req.session.user_id;
@@ -177,12 +169,7 @@ app.post("/register", (req, res) => {
     res.redirect("/urls");
   } else if (registrationValid(email, password, users)) {
     const ID = generateRandomString(numUserID);
-    let newUser = {
-      'id': ID,
-      'email': email,
-      'password': hashedPassword
-    }
-    users[ID] = newUser;
+    users[ID] = makeUserAccount(email,hashedPassword,ID);
     req.session.user_id = ID;
     res.redirect("/urls");
   } else {
@@ -194,7 +181,6 @@ app.post("/logout", (req, res) => {
   req.session = null;
   res.redirect("/urls");
 });
-
 
 //pre loaded stuff
 app.listen(PORT, () => {
