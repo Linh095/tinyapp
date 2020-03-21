@@ -19,7 +19,7 @@ app.set('partial', '/partial/_header');
 app.set("view engine", "ejs");
 
 
-//GET REQUESTS
+//GET REQUESTS: error pages, 
 app.get("/404", (req, res) => {
   res.render("404")
 });
@@ -30,10 +30,6 @@ app.get("/_404", (req, res) => {
 
 app.get("/403", (req, res) => {
   res.render("403")
-});
-
-app.get("/_403", (req, res) => {
-  res.render("_403")
 });
 
 app.get("/", (req, res) => {
@@ -50,8 +46,7 @@ app.get("/register", (req, res) => {
   if (checkID(ID, users)) {
     res.redirect("/urls")
   } else {
-    //************************ */
-    const templateVars = { urls: urlDatabase, user: { id: undefined } };
+    const templateVars = { loggedIn: false };
     res.render("register", templateVars);
   }
 });
@@ -61,9 +56,8 @@ app.get("/login", (req, res) => {
   if (checkID(ID, users)) {
     res.redirect("/urls")
   } else {
-    //************************ */
-    const templateVars = { urls: urlDatabase, user: { id: undefined } };
-  res.render("login", templateVars);
+    const templateVars = { loggedIn: false };
+    res.render("login", templateVars);
   }
 });
 
@@ -71,11 +65,11 @@ app.get("/urls", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
     const userUrls = urlsForUser(ID, urlDatabase);
-    const templateVars = { urls: userUrls, user: users[ID] };
+    const templateVars = { urls: userUrls, loggedIn: true };
     res.render("urls_index", templateVars);
   } else {
     req.session = null;
-    const templateVars = { urls: urlDatabase, user: { id: undefined } };
+    const templateVars = { loggedIn: false };
     res.render("logout_home", templateVars);
   }
 });
@@ -83,8 +77,7 @@ app.get("/urls", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
-    //************************ */
-    const templateVars = { urls: urlDatabase, user: users[ID] };
+    const templateVars = { loggedIn: false };
     res.render("urls_new", templateVars);
   } else {
     res.redirect("/login");
@@ -96,12 +89,12 @@ app.get("/urls/:shortURL", (req, res) => {
   const _shortURL = req.params.shortURL;
 
   //check if the url actually exists and if the user is logged in
-   if (urlDatabase[_shortURL] === undefined) {
+  if (urlDatabase[_shortURL] === undefined) {
     res.redirect("/404");
-   } else if (!checkID(ID, users)) {
-      res.redirect("/login");
+  } else if (!checkID(ID, users)) {
+    res.redirect("/login");
 
-  //if the user is not the owner of the short url, they can still see it but they cannot edit it (visit and visitor counted)
+    //if the user is not the owner of the short url, they can still see it but they cannot edit it (visit and visitor counted)
   } else if (urlDatabase[_shortURL].userID !== ID) {
     urlDatabase[_shortURL].visits += 1;
     urlDatabase[_shortURL].visitors = updateVisitors(_shortURL, ID, urlDatabase);
@@ -110,12 +103,12 @@ app.get("/urls/:shortURL", (req, res) => {
     let templateVars = { shortURL: _shortURL, info: urlDatabase[_shortURL], owner: false, id: true };
     res.render("urls_show", templateVars);
 
-  //if the user is the owner of the short url, they can edit
+    //if the user is the owner of the short url, they can edit
   } else {
     urlDatabase[_shortURL].visits += 1;
 
     //************************ */
-    let templateVars = { shortURL: _shortURL, info: urlDatabase[_shortURL], owner: true, id: true};
+    let templateVars = { shortURL: _shortURL, info: urlDatabase[_shortURL], owner: true, id: true };
     res.render("urls_show", templateVars);
   }
 });
