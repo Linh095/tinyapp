@@ -96,8 +96,6 @@ app.get("/urls/:shortURL", (req, res) => {
     res.redirect("/login");
   } else if (urlDatabase[_shortURL].userID !== ID) {
     urlDatabase[_shortURL] = updateVisitingInfo(_shortURL, ID, urlDatabase);
-
-
     const templateVars = makeTempVars(ID, _shortURL, urlDatabase, users);
     res.render("urls_show", templateVars);
   } else {

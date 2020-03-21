@@ -96,15 +96,18 @@ const makeTempVars = (ID, _shortURL, urlDatabase, users) => {
     shortURL: _shortURL,
     info: urlDatabase[_shortURL],
     owner: checkOwnership(ID, _shortURL, urlDatabase),
-    loggedIn: checkID(ID, users)
+    loggedIn: checkID(ID, users),
+    email: users[ID].email
   };
+  console.log(tempVars.info);
+
   return tempVars;
 };
 
 const makeTempVarsIndex = (ID, urlDatabase, users) => {
   const tempVars = {
     urls: urlsForUser(ID, urlDatabase),
-    info: {email: users[ID].email},
+    email: users[ID].email,
     loggedIn: checkID(ID, users)
   };
   return tempVars;
