@@ -78,7 +78,7 @@ app.get("/login", (req, res) => {
 app.get("/urls/new", (req, res) => {
   const ID = req.session.user_id;
   if (checkID(ID, users)) {
-    const templateVars = { loggedIn: false };
+    const templateVars = makeTempVarsIndex(ID, urlDatabase, users);
     res.render("urls_new", templateVars);
   } else {
     res.redirect("/login");

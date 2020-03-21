@@ -1,4 +1,5 @@
 const bcrypt = require("bcrypt");
+const { users, urlDatabase } = require("./global_variables");
 
 const generateRandomString = (numChar) => {
   let string = '';
@@ -71,18 +72,26 @@ const getDate = () => {
 
 const updateVisitors = (shortURL, ID, urlDatabase) => {
   let _visitors = urlDatabase[shortURL].visitors;
-  for (const visitor of _visitors) {
-    if (ID === visitor) {
+  console.log(_visitors);
+
+  _visitors.forEach(element => {
+    if (ID === element) {
       return _visitors;
     }
-  }
+  });
+  // for (const visitor of _visitors) {
+  //   console.log(visitor);
+    
+  // }
   return _visitors.push(ID)
 };
 
+console.log(updateVisitors("b6UTxQ", "userRandomID", urlDatabase));
+
 const updateVisitingInfo = (shortURL, ID, urlDatabase) => {
   let info = urlDatabase[shortURL];
-  info[visits] += 1;
-  info[visitors] = updateVisitors(shortURL, ID, urlDatabase);
+  info["visits"] += 1;
+  info["visitors"] = updateVisitors(shortURL, ID, urlDatabase);
   return info;
 }
 
@@ -98,7 +107,7 @@ const makeTempVars = (ID, _shortURL, urlDatabase, users) => {
 
 const makeTempVarsIndex = (ID, urlDatabase, users) => {
   const tempVars = {
-    url: urlsForUser(ID, urlDatabase),
+    urls: urlsForUser(ID, urlDatabase),
     info: {email: users[ID].email},
     loggedIn: checkID(ID, users)
   };
