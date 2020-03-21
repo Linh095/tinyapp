@@ -45,7 +45,7 @@ const checkID = (id, usersDatabase) => {
   }
   return false;
 }
-//************************ */
+
 const checkOwnership = (id, shortURL, urlDatabase) => {
   if (urlDatabase[shortURL].userID === id) {
     return true;
@@ -67,7 +67,7 @@ const urlsForUser = (id, urlDatabase) => {
 const getDate = () => {
   const date = new Date().toString().split(" ");
   return `${date[1]} ${date[2]} ${date[3]}`;
-}
+};
 
 const updateVisitors = (shortURL, ID, urlDatabase) => {
   let _visitors = urlDatabase[shortURL].visitors;
@@ -77,16 +77,42 @@ const updateVisitors = (shortURL, ID, urlDatabase) => {
     }
   }
   return _visitors.push(ID)
-}
+};
 
 const makeTempVars = (ID, _shortURL, urlDatabase, users) => {
-
-  let tempVars = {
+  const tempVars = {
     shortURL: _shortURL,
     info: urlDatabase[_shortURL],
-    owner: ,
-    loggedIn: };
-
+    owner: checkOwnership(ID, _shortURL, urlDatabase),
+    loggedIn: checkID(ID, users)
+  };
   return tempVars;
+};
+
+const makeNewURL = (ID, longUrl) => {
+  const templateURL = {
+    longURL: longUrl,
+    userID: ID,
+    date: getDate(),
+    visits: 1,
+    visitors: 1
+  }
+  return templateURL;
+};
+
+const makeUserAccount = (email, password, ID) => {
+  const templateUser = {
+    id: ID,
+    email: email,
+    password: bcrypt.hashSync(password, 10)
+  }
+  return templateUser;
 }
-module.exports = { generateRandomString, loginValidation, registrationValid, getID, checkID, urlsForUser, getDate, updateVisitors }
+
+const updateVisitingInfo = (shortURL, ID, urlDatabase) => {
+  let info = urlDatabase[shortURL];
+  info[visits] += 1;
+  info[visitors] = updateVisitors(shortURL, ID, urlDatabase);
+  return info;
+}
+module.exports = { generateRandomString, loginValidation, registrationValid, getID, checkID, checkOwnership, urlsForUser, makeTempVars, makeNewURL, makeUserAccount, updateVisitingInfo }

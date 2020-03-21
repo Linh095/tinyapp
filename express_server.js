@@ -4,7 +4,7 @@ const bcrypt = require("bcrypt");
 const cookieSession = require("cookie-session");
 const bodyParser = require("body-parser");
 const methodOverride = require('method-override');
-const { generateRandomString, loginValidation, registrationValid, getID, checkID, urlsForUser, getDate, updateVisitors } = require("./helpers");
+const { generateRandomString, loginValidation, registrationValid, getID, checkID, checkOwnership, urlsForUser, makeTempVars, makeNewURL, makeUserAccount, updateVisitingInfo } = require("./helpers");
 const { PORT, numChar, numUserID, users, urlDatabase } = require("./global_variables");
 
 //set keys for cookie encryption - keys can be changed
