@@ -96,8 +96,6 @@ const makeTempVars = (ID, _shortURL, urlDatabase, users) => {
     loggedIn: checkID(ID, users),
     email: users[ID].email
   };
-  console.log(tempVars.info);
-
   return tempVars;
 };
 
