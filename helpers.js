@@ -47,7 +47,11 @@ const checkID = (id, usersDatabase) => {
 }
 //************************ */
 const checkOwnership = (id, shortURL, urlDatabase) => {
-
+  if (urlDatabase[shortURL].userID === id) {
+    return true;
+  } else {
+    return false;
+  }
 }
 
 const urlsForUser = (id, urlDatabase) => {
@@ -76,11 +80,12 @@ const updateVisitors = (shortURL, ID, urlDatabase) => {
 }
 
 const makeTempVars = (ID, _shortURL, urlDatabase, users) => {
-  
-  let tempVars = {shortURL: _shortURL,
-                  info: urlDatabase[_shortURL],
-                  owner: ,
-                  loggedIn: };
+
+  let tempVars = {
+    shortURL: _shortURL,
+    info: urlDatabase[_shortURL],
+    owner: ,
+    loggedIn: };
 
   return tempVars;
 }
