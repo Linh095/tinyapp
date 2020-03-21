@@ -72,9 +72,6 @@ const getDate = () => {
 
 const updateVisitors = (shortURL, ID, urlDatabase) => {
   let _visitors = urlDatabase[shortURL].visitors;
-  console.log("type of _visitor", typeof _visitors);
-  console.log(_visitors);
-
   for (const visitor of _visitors) {
     if (ID === visitor) {
       return _visitors;
@@ -118,7 +115,7 @@ const makeNewURL = (ID, longUrl) => {
     longURL: longUrl,
     userID: ID,
     date: getDate(),
-    visits: 1,
+    visits: 0,
     visitors: [ID]
   }
   return templateURL;

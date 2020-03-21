@@ -184,7 +184,7 @@ app.post("/logout", (req, res) => {
   res.redirect("/urls");
 });
 
-//pre loaded stuff
+//for person running server to know its running
 app.listen(PORT, () => {
-  console.log(`Example app listening on port ${PORT}!`);
+  console.log(`Server active on ${PORT}!`);
 });
