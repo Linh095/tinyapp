@@ -23,8 +23,8 @@ const users = {
 }
 
 const urlDatabase = {
-  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "userRandomID", date: "3/16/2020", visits: 5, visitors: ["userRandomID", "user2RandomID"] },
-  i3BoGr: { longURL: "https://www.google.ca", userID: "user2RandomID", date: "3/16/2020", visits: 10, visitors: ["user2RandomID"]}
+  b6UTxQ: { longURL: "https://www.tsn.ca", userID: "userRandomID", date: "Mar 16 2020", visits: 5, visitors: ["userRandomID", "user2RandomID"] },
+  i3BoGr: { longURL: "https://www.google.ca", userID: "user2RandomID", date: "Mar 16 2020", visits: 10, visitors: ["user2RandomID"]}
 };
 
 module.exports = { PORT, numChar, numUserID, users, urlDatabase };
